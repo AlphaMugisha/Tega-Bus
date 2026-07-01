@@ -32,4 +32,32 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ], 201);
     }
+
+    public function login(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'phone' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful.',
+            'data' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    public function profile(\Illuminate\Http\Request $request): JsonResponse
+    {
+        return response()->json(['data' => $request->user()]);
+    }
 }

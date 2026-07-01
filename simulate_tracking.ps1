@@ -1,6 +1,6 @@
 # Simulation script for TransitEco Live Tracking
 $apiUrl = "http://127.0.0.1:8000/api/v1/driver/location"
-$scheduleId = "demo-schedule-uuid"
+$scheduleId = "550e8400-e29b-41d4-a716-446655440000"
 
 # Coordinates from Kigali to Gisenyi (approximate path)
 $points = @(
@@ -37,7 +37,10 @@ foreach ($point in $points) {
         $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $body -ContentType "application/json" -Headers $headers
         Write-Host "Updated Location: $($point.lat), $($point.lng) | Speed: $($body | ConvertFrom-Json | Select -ExpandProperty speed) km/h" -ForegroundColor Cyan
     } catch {
-        Write-Host "Failed to update location: $_" -ForegroundColor Red
+        $errorMessage = $_.Exception.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorMessage)
+        $responseBody = $reader.ReadToEnd()
+        Write-Host "Failed to update location: $responseBody" -ForegroundColor Red
     }
 
     Start-Sleep -Seconds 5

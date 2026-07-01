@@ -46,7 +46,7 @@ class SimulationSeeder extends Seeder
         ]);
 
         Schedule::create([
-            'id' => 'demo-schedule-uuid',
+            'id' => '550e8400-e29b-41d4-a716-446655440000',
             'bus_id' => $bus->id,
             'route_id' => $route->id,
             'departure_time' => now()->addHour(),
